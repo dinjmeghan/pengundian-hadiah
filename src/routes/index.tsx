@@ -136,7 +136,14 @@ function Index() {
           <p className="font-prize text-xs tracking-[0.3em] text-muted-foreground uppercase">
             Jackpot Undian Berhadiah 2026
           </p>
+          <Link
+            to="/kelola"
+            className="mt-2 flex h-14 items-center gap-2 rounded-xl bg-panel-2 px-6 font-display text-sm font-bold tracking-[0.14em] uppercase transition-all hover:bg-accent"
+          >
+            <Settings className="size-5" /> Kelola Data
+          </Link>
         </header>
+
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <main className="flex flex-col gap-6">
