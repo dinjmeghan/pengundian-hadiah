@@ -140,10 +140,10 @@ function Index() {
                 <div className="w-full rule-line" />
                 <div className="flex min-h-[7rem] w-full items-center justify-center overflow-hidden sm:min-h-[9rem]">
                   <p
-                    key={displayed.id + (winner ? "-w" : "")}
+                    key={(displayed?.id ?? 0) + (winner ? "-w" : "")}
                     className={`font-winner text-center text-[clamp(2.75rem,7vw,6rem)] leading-[1.02] font-extrabold tracking-tight break-words ${nameEffectClass}`}
                   >
-                    {displayed.name}
+                    {displayed?.name ?? "SIAP MENGUNDI"}
                   </p>
                 </div>
                 <div className="w-full rule-line" />
