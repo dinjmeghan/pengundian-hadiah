@@ -33,18 +33,20 @@ type Effect = (typeof EFFECTS)[number];
 function Index() {
   const [status, setStatus] = useState<Status>("READY");
   const [effect, setEffect] = useState<Effect>("Slot Machine");
+  const { participants, prizes } = useUndianData();
   const [prizeIndex, setPrizeIndex] = useState(0);
-  const [rolling, setRolling] = useState<Participant>(PARTICIPANTS[0]!);
+  const [rolling, setRolling] = useState<Participant | null>(null);
   const [winner, setWinner] = useState<Participant | null>(null);
   const [drawnIds, setDrawnIds] = useState<number[]>([]);
   const [savedCount, setSavedCount] = useState(0);
   const intervalRef = useRef<number | null>(null);
 
   const remaining = useMemo(
-    () => PARTICIPANTS.filter((p) => !drawnIds.includes(p.id)),
-    [drawnIds],
+    () => participants.filter((p) => !drawnIds.includes(p.id)),
+    [participants, drawnIds],
   );
-  const prize = PRIZES[prizeIndex % PRIZES.length]!;
+  const prizeNames = useMemo(() => prizes.map((p) => p.name), [prizes]);
+  const prize = prizeNames.length ? prizeNames[prizeIndex % prizeNames.length]! : "-";
 
   const clear = useCallback(() => {
     if (intervalRef.current !== null) {
