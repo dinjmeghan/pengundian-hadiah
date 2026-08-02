@@ -273,7 +273,8 @@ function Index() {
                     .slice()
                     .reverse()
                     .map((id, idx) => {
-                      const p = PARTICIPANTS.find((x) => x.id === id)!;
+                      const p = participants.find((x) => x.id === id);
+                      if (!p) return null;
                       return (
                         <li
                           key={id}
@@ -281,7 +282,10 @@ function Index() {
                         >
                           <span className="block font-semibold">{p.name}</span>
                           <span className="text-muted-foreground">
-                            {p.ticket} · {PRIZES[(drawnIds.length - 1 - idx) % PRIZES.length]}
+                            {p.ticket} ·{" "}
+                            {prizeNames.length
+                              ? prizeNames[(drawnIds.length - 1 - idx) % prizeNames.length]
+                              : "-"}
                           </span>
                         </li>
                       );
