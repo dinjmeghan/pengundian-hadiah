@@ -1,7 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Gift, Play, RotateCcw, Save, Square, Ticket, Users } from "lucide-react";
-import { PARTICIPANTS, PRIZES, type Participant } from "@/data/participants";
+import {
+  Gift,
+  Play,
+  RotateCcw,
+  Save,
+  Settings,
+  Square,
+  Ticket,
+  Users,
+} from "lucide-react";
+import { type Participant } from "@/data/participants";
+import { useUndianData } from "@/lib/store";
 import { Celebration } from "@/components/Celebration";
 import { playTick, playWin } from "@/lib/sound";
 
@@ -33,18 +43,20 @@ type Effect = (typeof EFFECTS)[number];
 function Index() {
   const [status, setStatus] = useState<Status>("READY");
   const [effect, setEffect] = useState<Effect>("Slot Machine");
+  const { participants, prizes } = useUndianData();
   const [prizeIndex, setPrizeIndex] = useState(0);
-  const [rolling, setRolling] = useState<Participant>(PARTICIPANTS[0]!);
+  const [rolling, setRolling] = useState<Participant | null>(null);
   const [winner, setWinner] = useState<Participant | null>(null);
   const [drawnIds, setDrawnIds] = useState<number[]>([]);
   const [savedCount, setSavedCount] = useState(0);
   const intervalRef = useRef<number | null>(null);
 
   const remaining = useMemo(
-    () => PARTICIPANTS.filter((p) => !drawnIds.includes(p.id)),
-    [drawnIds],
+    () => participants.filter((p) => !drawnIds.includes(p.id)),
+    [participants, drawnIds],
   );
-  const prize = PRIZES[prizeIndex % PRIZES.length]!;
+  const prizeNames = useMemo(() => prizes.map((p) => p.name), [prizes]);
+  const prize = prizeNames.length ? prizeNames[prizeIndex % prizeNames.length]! : "-";
 
   const clear = useCallback(() => {
     if (intervalRef.current !== null) {
@@ -124,7 +136,14 @@ function Index() {
           <p className="font-prize text-xs tracking-[0.3em] text-muted-foreground uppercase">
             Jackpot Undian Berhadiah 2026
           </p>
+          <Link
+            to="/kelola"
+            className="mt-2 flex h-14 items-center gap-2 rounded-xl bg-panel-2 px-6 font-display text-sm font-bold tracking-[0.14em] uppercase transition-all hover:bg-accent"
+          >
+            <Settings className="size-5" /> Kelola Data
+          </Link>
         </header>
+
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <main className="flex flex-col gap-6">
@@ -138,10 +157,10 @@ function Index() {
                 <div className="w-full rule-line" />
                 <div className="flex min-h-[7rem] w-full items-center justify-center overflow-hidden sm:min-h-[9rem]">
                   <p
-                    key={displayed.id + (winner ? "-w" : "")}
+                    key={(displayed?.id ?? 0) + (winner ? "-w" : "")}
                     className={`font-winner text-center text-[clamp(2.75rem,7vw,6rem)] leading-[1.02] font-extrabold tracking-tight break-words ${nameEffectClass}`}
                   >
-                    {displayed.name}
+                    {displayed?.name ?? "SIAP MENGUNDI"}
                   </p>
                 </div>
                 <div className="w-full rule-line" />
@@ -235,7 +254,7 @@ function Index() {
           {/* Operator sidebar */}
           <aside className="flex flex-col gap-4">
             <SidebarCard title="Peserta" icon={<Users className="size-4" />}>
-              <Stat label="Total Peserta" value={PARTICIPANTS.length.toLocaleString("id-ID")} />
+              <Stat label="Total Peserta" value={participants.length.toLocaleString("id-ID")} />
               <Stat label="Sudah Terundi" value={savedCount.toLocaleString("id-ID")} />
               <Stat label="Sisa Peserta" value={remaining.length.toLocaleString("id-ID")} />
             </SidebarCard>
@@ -245,7 +264,7 @@ function Index() {
                 {prize}
               </p>
               <p className="font-prize text-xs tracking-widest text-muted-foreground uppercase">
-                Sesi {prizeIndex + 1} dari {PRIZES.length}
+                Sesi {prizeIndex + 1} dari {prizeNames.length}
               </p>
             </SidebarCard>
 
@@ -273,7 +292,8 @@ function Index() {
                     .slice()
                     .reverse()
                     .map((id, idx) => {
-                      const p = PARTICIPANTS.find((x) => x.id === id)!;
+                      const p = participants.find((x) => x.id === id);
+                      if (!p) return null;
                       return (
                         <li
                           key={id}
@@ -281,7 +301,10 @@ function Index() {
                         >
                           <span className="block font-semibold">{p.name}</span>
                           <span className="text-muted-foreground">
-                            {p.ticket} · {PRIZES[(drawnIds.length - 1 - idx) % PRIZES.length]}
+                            {p.ticket} ·{" "}
+                            {prizeNames.length
+                              ? prizeNames[(drawnIds.length - 1 - idx) % prizeNames.length]
+                              : "-"}
                           </span>
                         </li>
                       );
