@@ -235,7 +235,7 @@ function Index() {
           {/* Operator sidebar */}
           <aside className="flex flex-col gap-4">
             <SidebarCard title="Peserta" icon={<Users className="size-4" />}>
-              <Stat label="Total Peserta" value={PARTICIPANTS.length.toLocaleString("id-ID")} />
+              <Stat label="Total Peserta" value={participants.length.toLocaleString("id-ID")} />
               <Stat label="Sudah Terundi" value={savedCount.toLocaleString("id-ID")} />
               <Stat label="Sisa Peserta" value={remaining.length.toLocaleString("id-ID")} />
             </SidebarCard>
@@ -245,7 +245,7 @@ function Index() {
                 {prize}
               </p>
               <p className="font-prize text-xs tracking-widest text-muted-foreground uppercase">
-                Sesi {prizeIndex + 1} dari {PRIZES.length}
+                Sesi {prizeIndex + 1} dari {prizeNames.length}
               </p>
             </SidebarCard>
 
