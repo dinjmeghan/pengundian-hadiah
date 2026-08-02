@@ -1,8 +1,10 @@
 export type Participant = {
   id: number;
   name: string;
+  address: string;
   ticket: string;
 };
+
 
 const FIRST = [
   "Andi",
