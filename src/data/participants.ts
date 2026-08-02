@@ -59,12 +59,25 @@ export const PRIZES = [
   "Voucher Belanja 5 Juta",
 ];
 
+const CITIES = [
+  "Jakarta",
+  "Bandung",
+  "Surabaya",
+  "Medan",
+  "Semarang",
+  "Yogyakarta",
+  "Makassar",
+  "Denpasar",
+];
+
 export const PARTICIPANTS: Participant[] = Array.from({ length: 1250 }, (_, i) => {
   const first = FIRST[(i * 7) % FIRST.length]!;
   const last = LAST[(i * 11) % LAST.length]!;
+  const city = CITIES[(i * 5) % CITIES.length]!;
   return {
     id: i + 1,
     name: `${first} ${last}`.toUpperCase(),
+    address: `Jl. Merdeka No. ${(i % 120) + 1}, ${city}`,
     ticket: `JP-2026-${String(i + 1).padStart(6, "0")}`,
   };
 });
