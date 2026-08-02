@@ -58,8 +58,8 @@ export const PRIZES = [
 ];
 
 export const PARTICIPANTS: Participant[] = Array.from({ length: 1250 }, (_, i) => {
-  const first = FIRST[(i * 7) % FIRST.length];
-  const last = LAST[(i * 11) % LAST.length];
+  const first = FIRST[(i * 7) % FIRST.length]!;
+  const last = LAST[(i * 11) % LAST.length]!;
   return {
     id: i + 1,
     name: `${first} ${last}`.toUpperCase(),

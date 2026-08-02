@@ -41,7 +41,7 @@ export function Celebration({ active }: { active: boolean }) {
       size: 5 + Math.random() * 8,
       rot: Math.random() * Math.PI,
       vr: (Math.random() - 0.5) * 0.25,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      color: COLORS[Math.floor(Math.random() * COLORS.length)]!,
     }));
 
     const tick = () => {
