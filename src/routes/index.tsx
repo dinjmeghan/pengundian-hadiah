@@ -1,7 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Gift, Play, RotateCcw, Save, Square, Ticket, Users } from "lucide-react";
-import { PARTICIPANTS, PRIZES, type Participant } from "@/data/participants";
+import {
+  Gift,
+  Play,
+  RotateCcw,
+  Save,
+  Settings,
+  Square,
+  Ticket,
+  Users,
+} from "lucide-react";
+import { type Participant } from "@/data/participants";
+import { useUndianData } from "@/lib/store";
 import { Celebration } from "@/components/Celebration";
 import { playTick, playWin } from "@/lib/sound";
 
