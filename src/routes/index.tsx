@@ -47,7 +47,7 @@ function Index() {
   const [prizeIndex, setPrizeIndex] = useState(0);
   const [rolling, setRolling] = useState<Participant | null>(null);
   const [winner, setWinner] = useState<Participant | null>(null);
-  const [drawnIds, setDrawnIds] = useState<number[]>([]);
+  const [drawnIds, setDrawnIds] = useState<string[]>([]);
   const [savedCount, setSavedCount] = useState(0);
   const intervalRef = useRef<number | null>(null);
 
@@ -157,7 +157,7 @@ function Index() {
                 <div className="w-full rule-line" />
                 <div className="flex min-h-[7rem] w-full items-center justify-center overflow-hidden sm:min-h-[9rem]">
                   <p
-                    key={(displayed?.id ?? 0) + (winner ? "-w" : "")}
+                    key={(displayed?.id ?? "") + (winner ? "-w" : "")}
                     className={`font-winner text-center text-[clamp(2.75rem,7vw,6rem)] leading-[1.02] font-extrabold tracking-tight break-words ${nameEffectClass}`}
                   >
                     {displayed?.name ?? "SIAP MENGUNDI"}
