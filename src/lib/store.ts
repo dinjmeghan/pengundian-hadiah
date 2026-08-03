@@ -13,17 +13,27 @@ export function useUndianData() {
   const [hydrated, setHydrated] = useState(false);
 
   const load = useCallback(async () => {
-    const [p, h] = await Promise.all([
-      supabase
+    const rows: Participant[] = [];
+    const PAGE = 1000;
+    for (let from = 0; ; from += PAGE) {
+      const { data } = await supabase
         .from("participants")
         .select("id, name, address, ticket")
-        .order("created_at", { ascending: true }),
-      supabase.from("prizes").select("id, name").order("position", { ascending: true }),
-    ]);
-    setParticipants((p.data ?? []) as Participant[]);
-    setPrizes((h.data ?? []) as PrizeItem[]);
+        .order("created_at", { ascending: true })
+        .range(from, from + PAGE - 1);
+      const chunk = (data ?? []) as Participant[];
+      rows.push(...chunk);
+      if (chunk.length < PAGE) break;
+    }
+    const { data: h } = await supabase
+      .from("prizes")
+      .select("id, name")
+      .order("position", { ascending: true });
+    setParticipants(rows);
+    setPrizes((h ?? []) as PrizeItem[]);
     setHydrated(true);
   }, []);
+
 
   useEffect(() => {
     void load();
