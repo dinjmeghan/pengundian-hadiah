@@ -14,6 +14,7 @@ import { type Participant } from "@/data/participants";
 import { useUndianData } from "@/lib/store";
 import { Celebration } from "@/components/Celebration";
 import { playTick, playWin } from "@/lib/sound";
+import { OperatorGate, SignOutButton } from "@/components/OperatorGate";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,8 +33,16 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  component: Index,
+  component: IndexPage,
 });
+
+function IndexPage() {
+  return (
+    <OperatorGate>
+      <Index />
+    </OperatorGate>
+  );
+}
 
 type Status = "READY" | "MENGUNDI" | "PEMENANG";
 
@@ -142,6 +151,7 @@ function Index() {
           >
             <Settings className="size-5" /> Kelola Data
           </Link>
+          <SignOutButton />
         </header>
 
 

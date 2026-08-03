@@ -13,6 +13,13 @@ export function useUndianData() {
   const [hydrated, setHydrated] = useState(false);
 
   const load = useCallback(async () => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) {
+      setParticipants([]);
+      setPrizes([]);
+      setHydrated(true);
+      return;
+    }
     const rows: Participant[] = [];
     const PAGE = 1000;
     for (let from = 0; ; from += PAGE) {

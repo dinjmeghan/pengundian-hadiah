@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, Gift, Pencil, Plus, Trash2, Users, X } from "lucide-react";
 import { useUndianData } from "@/lib/store";
+import { OperatorGate, SignOutButton } from "@/components/OperatorGate";
 
 export const Route = createFileRoute("/kelola")({
   head: () => ({
@@ -19,8 +20,16 @@ export const Route = createFileRoute("/kelola")({
       },
     ],
   }),
-  component: Kelola,
+  component: KelolaPage,
 });
+
+function KelolaPage() {
+  return (
+    <OperatorGate>
+      <Kelola />
+    </OperatorGate>
+  );
+}
 
 type Form = { name: string; address: string; ticket: string };
 const EMPTY: Form = { name: "", address: "", ticket: "" };
@@ -86,6 +95,7 @@ function Kelola() {
           >
             <ArrowLeft className="size-5" /> Kembali ke Dashboard
           </Link>
+          <SignOutButton />
         </header>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
