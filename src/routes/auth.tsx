@@ -51,9 +51,18 @@ function AuthPage() {
         password,
         options: { emailRedirectTo: window.location.origin },
       });
-      if (error) setMessage(error.message);
-      else if (!data.session) setMessage("Cek email Anda untuk konfirmasi akun operator.");
+      if (error && error.message.toLowerCase().includes("already registered")) {
+        const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+        if (loginError) setMessage(loginError.message);
+      } else if (error) {
+        setMessage(error.message);
+      } else if (!data.session) {
+        // Konfirmasi email dinonaktifkan: langsung masuk setelah mendaftar.
+        const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+        if (loginError) setMessage(loginError.message);
+      }
     }
+
     setBusy(false);
   };
 
