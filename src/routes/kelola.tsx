@@ -38,11 +38,11 @@ function Kelola() {
   } = useUndianData();
 
   const [form, setForm] = useState<Form>(EMPTY);
-  const [editId, setEditId] = useState<number | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
   const [prizeName, setPrizeName] = useState("");
-  const [prizeEditId, setPrizeEditId] = useState<number | null>(null);
+  const [prizeEditId, setPrizeEditId] = useState<string | null>(null);
 
   const filtered = participants.filter((p) =>
     `${p.name} ${p.address} ${p.ticket}`.toLowerCase().includes(query.toLowerCase()),
