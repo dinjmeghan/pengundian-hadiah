@@ -1,75 +1,67 @@
 import { useCallback, useEffect, useState } from "react";
-import { PARTICIPANTS, PRIZES, type Participant } from "@/data/participants";
+import { supabase } from "@/integrations/supabase/client";
+import { type Participant } from "@/data/participants";
 
-export type PrizeItem = { id: number; name: string };
-
-const P_KEY = "undian.participants.v1";
-const H_KEY = "undian.prizes.v1";
-
-const seedParticipants = (): Participant[] => PARTICIPANTS.slice(0, 50);
-const seedPrizes = (): PrizeItem[] => PRIZES.map((name, i) => ({ id: i + 1, name }));
-
-function read<T>(key: string, fallback: () => T): T {
-  if (typeof window === "undefined") return fallback();
-  try {
-    const raw = window.localStorage.getItem(key);
-    if (!raw) return fallback();
-    const parsed = JSON.parse(raw) as T;
-    return Array.isArray(parsed) && parsed.length >= 0 ? parsed : fallback();
-  } catch {
-    return fallback();
-  }
-}
+export type PrizeItem = { id: string; name: string };
 
 const listeners = new Set<() => void>();
 const notify = () => listeners.forEach((l) => l());
 
 export function useUndianData() {
-  const [participants, setParticipants] = useState<Participant[]>(seedParticipants);
-  const [prizes, setPrizes] = useState<PrizeItem[]>(seedPrizes);
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [prizes, setPrizes] = useState<PrizeItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
-  const load = useCallback(() => {
-    setParticipants(read(P_KEY, seedParticipants));
-    setPrizes(read(H_KEY, seedPrizes));
+  const load = useCallback(async () => {
+    const [p, h] = await Promise.all([
+      supabase
+        .from("participants")
+        .select("id, name, address, ticket")
+        .order("created_at", { ascending: true }),
+      supabase.from("prizes").select("id, name").order("position", { ascending: true }),
+    ]);
+    setParticipants((p.data ?? []) as Participant[]);
+    setPrizes((h.data ?? []) as PrizeItem[]);
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
-    load();
-    setHydrated(true);
+    void load();
     listeners.add(load);
     return () => {
       listeners.delete(load);
     };
   }, [load]);
 
-  const persistParticipants = useCallback((next: Participant[]) => {
-    window.localStorage.setItem(P_KEY, JSON.stringify(next));
+  const addParticipant = async (data: Omit<Participant, "id">) => {
+    await supabase.from("participants").insert(data);
     notify();
-  }, []);
+  };
 
-  const persistPrizes = useCallback((next: PrizeItem[]) => {
-    window.localStorage.setItem(H_KEY, JSON.stringify(next));
+  const updateParticipant = async (id: string, data: Omit<Participant, "id">) => {
+    await supabase.from("participants").update(data).eq("id", id);
     notify();
-  }, []);
+  };
 
-  const nextId = (rows: { id: number }[]) => rows.reduce((m, r) => Math.max(m, r.id), 0) + 1;
+  const deleteParticipant = async (id: string) => {
+    await supabase.from("participants").delete().eq("id", id);
+    notify();
+  };
 
-  const addParticipant = (data: Omit<Participant, "id">) =>
-    persistParticipants([...participants, { ...data, id: nextId(participants) }]);
+  const addPrize = async (name: string) => {
+    await supabase.from("prizes").insert({ name, position: prizes.length + 1 });
+    notify();
+  };
 
-  const updateParticipant = (id: number, data: Omit<Participant, "id">) =>
-    persistParticipants(participants.map((p) => (p.id === id ? { ...p, ...data } : p)));
+  const updatePrize = async (id: string, name: string) => {
+    await supabase.from("prizes").update({ name }).eq("id", id);
+    notify();
+  };
 
-  const deleteParticipant = (id: number) =>
-    persistParticipants(participants.filter((p) => p.id !== id));
-
-  const addPrize = (name: string) => persistPrizes([...prizes, { id: nextId(prizes), name }]);
-
-  const updatePrize = (id: number, name: string) =>
-    persistPrizes(prizes.map((p) => (p.id === id ? { ...p, name } : p)));
-
-  const deletePrize = (id: number) => persistPrizes(prizes.filter((p) => p.id !== id));
+  const deletePrize = async (id: string) => {
+    await supabase.from("prizes").delete().eq("id", id);
+    notify();
+  };
 
   return {
     hydrated,
