@@ -1,5 +1,5 @@
 export type Participant = {
-  id: number;
+  id: string;
   name: string;
   address: string;
   ticket: string;
@@ -75,7 +75,7 @@ export const PARTICIPANTS: Participant[] = Array.from({ length: 1250 }, (_, i) =
   const last = LAST[(i * 11) % LAST.length]!;
   const city = CITIES[(i * 5) % CITIES.length]!;
   return {
-    id: i + 1,
+    id: String(i + 1),
     name: `${first} ${last}`.toUpperCase(),
     address: `Jl. Merdeka No. ${(i % 120) + 1}, ${city}`,
     ticket: `JP-2026-${String(i + 1).padStart(6, "0")}`,
