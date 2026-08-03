@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { LogIn, ShieldCheck, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { useOperatorSession } from "@/lib/auth";
 
 export const Route = createFileRoute("/auth")({
@@ -58,15 +57,6 @@ function AuthPage() {
     setBusy(false);
   };
 
-  const google = async () => {
-    setMessage(null);
-    try {
-      await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    } catch (err) {
-      setMessage(err instanceof Error ? err.message : "Gagal masuk dengan Google.");
-    }
-  };
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <section className="panel-surface shine flex w-full max-w-md flex-col gap-5 rounded-3xl px-8 py-10">
@@ -116,14 +106,6 @@ function AuthPage() {
             {mode === "login" ? "Masuk" : "Daftar"}
           </button>
         </form>
-
-        <button
-          type="button"
-          onClick={() => void google()}
-          className="flex h-14 items-center justify-center gap-2 rounded-xl bg-panel-2 px-6 font-display text-sm font-bold tracking-[0.14em] uppercase transition-all hover:bg-accent"
-        >
-          Masuk dengan Google
-        </button>
 
         {message && (
           <p className="rounded-xl bg-panel-2/70 px-4 py-3 font-prize text-xs text-muted-foreground">
