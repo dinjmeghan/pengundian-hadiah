@@ -78,7 +78,9 @@ function AuthPage() {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/auth` },
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth?next=${encodeURIComponent(next)}`,
+          },
         });
         if (error) {
           setMessage(translate(error.message));
