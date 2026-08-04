@@ -1,9 +1,11 @@
-import { auth, defineMcp, type AnyToolDefinition } from "@lovable.dev/mcp-js";
+import { auth, defineMcp } from "@lovable.dev/mcp-js";
 import listParticipantsTool from "./tools/list-participants";
 import createParticipantTool from "./tools/create-participant";
 import deleteParticipantTool from "./tools/delete-participant";
 import listPrizesTool from "./tools/list-prizes";
 import createPrizeTool from "./tools/create-prize";
+
+type McpTools = Parameters<typeof defineMcp>[0]["tools"];
 
 // The OAuth issuer must be the direct Supabase host; the project ref is the only
 // value that survives publish unchanged.
@@ -25,5 +27,6 @@ export default defineMcp({
     deleteParticipantTool,
     listPrizesTool,
     createPrizeTool,
-  ],
+  ] as unknown as McpTools,
+});
 });
