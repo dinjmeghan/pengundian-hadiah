@@ -135,7 +135,7 @@ function AuthPage() {
             className="flex h-14 items-center justify-center gap-2 rounded-xl bg-primary px-6 font-display text-sm font-bold tracking-[0.14em] text-primary-foreground uppercase transition-all hover:brightness-110 disabled:opacity-50"
           >
             {mode === "login" ? <LogIn className="size-5" /> : <UserPlus className="size-5" />}
-            {mode === "login" ? "Masuk" : "Daftar"}
+            {busy ? "Memproses..." : mode === "login" ? "Masuk" : "Daftar"}
           </button>
         </form>
 
