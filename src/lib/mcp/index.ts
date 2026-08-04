@@ -29,4 +29,3 @@ export default defineMcp({
     createPrizeTool,
   ] as unknown as McpTools,
 });
-});
