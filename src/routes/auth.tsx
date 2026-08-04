@@ -4,7 +4,13 @@ import { LogIn, ShieldCheck, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useOperatorSession } from "@/lib/auth";
 
+function safeNext(value: unknown): string {
+  if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//")) return "/";
+  return value;
+}
+
 export const Route = createFileRoute("/auth")({
+  validateSearch: (s: Record<string, unknown>) => ({ next: safeNext(s['next']) }),
   head: () => ({
     meta: [
       { title: "Masuk Operator Undian | Undian Live" },
@@ -27,6 +33,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const { signedIn, ready } = useOperatorSession();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -35,8 +42,13 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (ready && signedIn) void navigate({ to: "/", replace: true });
-  }, [ready, signedIn, navigate]);
+    if (!ready || !signedIn) return;
+    if (next !== "/") {
+      window.location.href = next;
+      return;
+    }
+    void navigate({ to: "/", replace: true });
+  }, [ready, signedIn, navigate, next]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,7 +78,9 @@ function AuthPage() {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/auth` },
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth?next=${encodeURIComponent(next)}`,
+          },
         });
         if (error) {
           setMessage(translate(error.message));
