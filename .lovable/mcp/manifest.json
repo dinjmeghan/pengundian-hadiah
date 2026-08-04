@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://tpkeqgnwpdkjobqigxki.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "lucky-draw-dashboard",
+      "version": "0.1.0",
+      "title": "Lucky Draw Dashboard"
+    },
+    "tools": [
+      {
+        "name": "list_participants",
+        "title": "List participants",
+        "description": "List lucky-draw participants (name, address, ticket number). Supports an optional name/ticket search and a result limit.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "search": {
+              "type": "string",
+              "description": "Optional text to match against name or ticket number."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Max rows to return (default 50, max 500)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_participant",
+        "title": "Create participant",
+        "description": "Add a new lucky-draw participant with a name, address and ticket number.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Participant full name."
+            },
+            "address": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Participant address."
+            },
+            "ticket": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Draw ticket number, e.g. JP-2026-000123."
+            }
+          },
+          "required": [
+            "name",
+            "address",
+            "ticket"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "delete_participant",
+        "title": "Delete participant",
+        "description": "Remove a lucky-draw participant by id.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Participant id (uuid)."
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_prizes",
+        "title": "List prizes",
+        "description": "List the lucky-draw prizes in draw order.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_prize",
+        "title": "Create prize",
+        "description": "Add a prize to the lucky-draw prize list.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Prize name, e.g. SMART TV 55 INCH."
+            },
+            "position": {
+              "type": "integer",
+              "description": "Optional draw order position."
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
