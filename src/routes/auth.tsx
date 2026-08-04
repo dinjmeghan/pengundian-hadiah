@@ -33,6 +33,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const { signedIn, ready } = useOperatorSession();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -41,8 +42,13 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (ready && signedIn) void navigate({ to: "/", replace: true });
-  }, [ready, signedIn, navigate]);
+    if (!ready || !signedIn) return;
+    if (next !== "/") {
+      window.location.href = next;
+      return;
+    }
+    void navigate({ to: "/", replace: true });
+  }, [ready, signedIn, navigate, next]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
