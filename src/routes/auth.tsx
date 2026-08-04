@@ -40,31 +40,54 @@ function AuthPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (busy) return;
     setBusy(true);
     setMessage(null);
-    if (mode === "login") {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) setMessage(error.message);
-    } else {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: window.location.origin },
-      });
-      if (error && error.message.toLowerCase().includes("already registered")) {
-        const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
-        if (loginError) setMessage(loginError.message);
-      } else if (error) {
-        setMessage(error.message);
-      } else if (!data.session) {
-        // Konfirmasi email dinonaktifkan: langsung masuk setelah mendaftar.
-        const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
-        if (loginError) setMessage(loginError.message);
-      }
-    }
 
-    setBusy(false);
+    const translate = (msg: string) => {
+      const m = msg.toLowerCase();
+      if (m.includes("invalid login credentials")) return "Email atau password salah.";
+      if (m.includes("email not confirmed"))
+        return "Email belum dikonfirmasi. Buka tautan konfirmasi di inbox Anda lalu masuk kembali.";
+      if (m.includes("already registered") || m.includes("already been registered"))
+        return "Email sudah terdaftar. Silakan masuk.";
+      if (m.includes("pwned") || m.includes("weak"))
+        return "Password terlalu lemah atau pernah kebocoran. Gunakan password lain.";
+      if (m.includes("rate limit"))
+        return "Terlalu banyak percobaan. Coba lagi beberapa menit lagi.";
+      return msg;
+    };
+
+    try {
+      if (mode === "login") {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) setMessage(translate(error.message));
+      } else {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: `${window.location.origin}/auth` },
+        });
+        if (error) {
+          setMessage(translate(error.message));
+        } else if (!data.session) {
+          setMessage(
+            "Pendaftaran berhasil. Kami mengirim email konfirmasi ke " +
+              email +
+              ". Klik tautan di email tersebut, lalu masuk di halaman ini.",
+          );
+          setMode("login");
+        }
+      }
+    } catch (err) {
+      setMessage(
+        err instanceof Error ? translate(err.message) : "Terjadi kesalahan. Coba lagi.",
+      );
+    } finally {
+      setBusy(false);
+    }
   };
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
@@ -112,7 +135,7 @@ function AuthPage() {
             className="flex h-14 items-center justify-center gap-2 rounded-xl bg-primary px-6 font-display text-sm font-bold tracking-[0.14em] text-primary-foreground uppercase transition-all hover:brightness-110 disabled:opacity-50"
           >
             {mode === "login" ? <LogIn className="size-5" /> : <UserPlus className="size-5" />}
-            {mode === "login" ? "Masuk" : "Daftar"}
+            {busy ? "Memproses..." : mode === "login" ? "Masuk" : "Daftar"}
           </button>
         </form>
 
