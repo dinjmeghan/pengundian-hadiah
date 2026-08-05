@@ -19,7 +19,7 @@
       {
         "name": "list_participants",
         "title": "List participants",
-        "description": "List lucky-draw participants (name, address, ticket number). Supports an optional name/ticket search and a result limit.",
+        "description": "List lucky-draw participants (name, address, phone number). Supports an optional name/ticket search and a result limit.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -30,7 +30,7 @@
           "properties": {
             "search": {
               "type": "string",
-              "description": "Optional text to match against name or ticket number."
+              "description": "Optional text to match against name or phone number."
             },
             "limit": {
               "type": "integer",
@@ -45,7 +45,7 @@
       {
         "name": "create_participant",
         "title": "Create participant",
-        "description": "Add a new lucky-draw participant with a name, address and ticket number.",
+        "description": "Add a new lucky-draw participant with a name, address and phone number.",
         "annotations": {
           "readOnlyHint": false,
           "destructiveHint": false,
@@ -64,16 +64,16 @@
               "minLength": 1,
               "description": "Participant address."
             },
-            "ticket": {
+            "phone": {
               "type": "string",
               "minLength": 1,
-              "description": "Draw ticket number, e.g. JP-2026-000123."
+              "description": "Participant phone number, e.g. 081234567890."
             }
           },
           "required": [
             "name",
             "address",
-            "ticket"
+            "phone"
           ],
           "additionalProperties": false,
           "$schema": "http://json-schema.org/draft-07/schema#"
@@ -142,6 +142,11 @@
             "position": {
               "type": "integer",
               "description": "Optional draw order position."
+            },
+            "quantity": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "How many units of this prize (default 1)."
             }
           },
           "required": [

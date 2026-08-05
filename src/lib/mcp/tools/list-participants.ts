@@ -6,9 +6,9 @@ export default defineTool({
   name: "list_participants",
   title: "List participants",
   description:
-    "List lucky-draw participants (name, address, ticket number). Supports an optional name/ticket search and a result limit.",
+    "List lucky-draw participants (name, address, phone number). Supports an optional name/ticket search and a result limit.",
   inputSchema: {
-    search: z.string().trim().optional().describe("Optional text to match against name or ticket number."),
+    search: z.string().trim().optional().describe("Optional text to match against name or phone number."),
     limit: z.number().int().optional().describe("Max rows to return (default 50, max 500)."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
@@ -20,10 +20,10 @@ export default defineTool({
     const supabase = supabaseForUser(ctx);
     let query = supabase
       .from("participants")
-      .select("id, name, address, ticket")
+      .select("id, name, address, phone")
       .order("created_at", { ascending: true })
       .limit(take);
-    if (search) query = query.or(`name.ilike.%${search}%,ticket.ilike.%${search}%`);
+    if (search) query = query.or(`name.ilike.%${search}%,phone.ilike.%${search}%`);
 
     const { data, error } = await query;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };

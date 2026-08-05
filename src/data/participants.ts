@@ -2,7 +2,7 @@ export type Participant = {
   id: string;
   name: string;
   address: string;
-  ticket: string;
+  phone: string;
 };
 
 
@@ -78,6 +78,6 @@ export const PARTICIPANTS: Participant[] = Array.from({ length: 1250 }, (_, i) =
     id: String(i + 1),
     name: `${first} ${last}`.toUpperCase(),
     address: `Jl. Merdeka No. ${(i % 120) + 1}, ${city}`,
-    ticket: `JP-2026-${String(i + 1).padStart(6, "0")}`,
+    phone: `08${String(1000000000 + i * 7919).slice(0, 10)}`,
   };
 });

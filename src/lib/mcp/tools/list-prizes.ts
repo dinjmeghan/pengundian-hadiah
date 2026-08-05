@@ -15,7 +15,7 @@ export default defineTool({
     const supabase = supabaseForUser(ctx);
     const { data, error } = await supabase
       .from("prizes")
-      .select("id, name, position")
+      .select("id, name, position, quantity")
       .order("position", { ascending: true });
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     return {

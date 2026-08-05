@@ -9,9 +9,10 @@ export default defineTool({
   inputSchema: {
     name: z.string().trim().min(1).describe("Prize name, e.g. SMART TV 55 INCH."),
     position: z.number().int().optional().describe("Optional draw order position."),
+    quantity: z.number().int().min(1).optional().describe("How many units of this prize (default 1)."),
   },
   annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
-  handler: async ({ name, position }, ctx) => {
+  handler: async ({ name, position, quantity }, ctx) => {
     if (!ctx.isAuthenticated()) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
@@ -27,8 +28,8 @@ export default defineTool({
     }
     const { data, error } = await supabase
       .from("prizes")
-      .insert({ name, position: nextPosition })
-      .select("id, name, position");
+      .insert({ name, position: nextPosition, quantity: quantity ?? 1 })
+      .select("id, name, position, quantity");
     if (error) throw new ToolError(error.message);
     return {
       content: [{ type: "text", text: JSON.stringify(data?.[0] ?? null) }],

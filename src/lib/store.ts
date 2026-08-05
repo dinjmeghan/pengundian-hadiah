@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { type Participant } from "@/data/participants";
 
-export type PrizeItem = { id: string; name: string };
+export type PrizeItem = { id: string; name: string; quantity: number };
 
 const listeners = new Set<() => void>();
 const notify = () => listeners.forEach((l) => l());
@@ -25,7 +25,7 @@ export function useUndianData() {
     for (let from = 0; ; from += PAGE) {
       const { data } = await supabase
         .from("participants")
-        .select("id, name, address, ticket")
+        .select("id, name, address, phone")
         .order("created_at", { ascending: true })
         .range(from, from + PAGE - 1);
       const chunk = (data ?? []) as Participant[];
@@ -34,7 +34,7 @@ export function useUndianData() {
     }
     const { data: h } = await supabase
       .from("prizes")
-      .select("id, name")
+      .select("id, name, quantity")
       .order("position", { ascending: true });
     setParticipants(rows);
     setPrizes((h ?? []) as PrizeItem[]);
@@ -66,12 +66,17 @@ export function useUndianData() {
   };
 
   const addPrize = async (name: string) => {
-    await supabase.from("prizes").insert({ name, position: prizes.length + 1 });
+    await supabase.from("prizes").insert({ name, position: prizes.length + 1, quantity: 1 });
     notify();
   };
 
   const updatePrize = async (id: string, name: string) => {
     await supabase.from("prizes").update({ name }).eq("id", id);
+    notify();
+  };
+
+  const updatePrizeQuantity = async (id: string, quantity: number) => {
+    await supabase.from("prizes").update({ quantity: Math.max(1, quantity) }).eq("id", id);
     notify();
   };
 
@@ -89,6 +94,7 @@ export function useUndianData() {
     deleteParticipant,
     addPrize,
     updatePrize,
+    updatePrizeQuantity,
     deletePrize,
   };
 }
