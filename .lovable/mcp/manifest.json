@@ -19,7 +19,7 @@
       {
         "name": "list_participants",
         "title": "List participants",
-        "description": "List lucky-draw participants (name, address, phone number). Supports an optional name/ticket search and a result limit.",
+        "description": "List lucky-draw participants (name, address, phone number). Supports an optional name/phone search and a result limit.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
