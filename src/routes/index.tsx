@@ -64,7 +64,10 @@ function Index() {
     () => participants.filter((p) => !drawnIds.includes(p.id)),
     [participants, drawnIds],
   );
-  const prizeNames = useMemo(() => prizes.map((p) => p.name), [prizes]);
+  const prizeNames = useMemo(
+    () => prizes.flatMap((p) => Array.from({ length: Math.max(1, p.quantity ?? 1) }, () => p.name)),
+    [prizes],
+  );
   const prize = prizeNames.length ? prizeNames[prizeIndex % prizeNames.length]! : "-";
 
   const clear = useCallback(() => {
@@ -186,10 +189,10 @@ function Index() {
                   <div className="flex w-full animate-pop flex-col items-center gap-6">
                     <div className="flex flex-col items-center gap-2">
                       <span className="font-prize text-[0.7rem] tracking-[0.36em] text-muted-foreground uppercase">
-                        Nomor Undian
+                        Nomor HP
                       </span>
                       <span className="font-display text-[clamp(1.9rem,3vw,2.5rem)] font-bold tracking-[0.12em]">
-                        {winner.ticket}
+                        {winner.phone}
                       </span>
                     </div>
 
@@ -311,7 +314,7 @@ function Index() {
                         >
                           <span className="block font-semibold">{p.name}</span>
                           <span className="text-muted-foreground">
-                            {p.ticket} ·{" "}
+                            {p.phone} ·{" "}
                             {prizeNames.length
                               ? prizeNames[(drawnIds.length - 1 - idx) % prizeNames.length]
                               : "-"}

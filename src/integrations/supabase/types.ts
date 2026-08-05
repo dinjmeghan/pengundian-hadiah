@@ -20,21 +20,21 @@ export type Database = {
           created_at: string
           id: string
           name: string
-          ticket: string
+          phone: string
         }
         Insert: {
           address?: string
           created_at?: string
           id?: string
           name: string
-          ticket?: string
+          phone?: string
         }
         Update: {
           address?: string
           created_at?: string
           id?: string
           name?: string
-          ticket?: string
+          phone?: string
         }
         Relationships: []
       }
@@ -44,18 +44,21 @@ export type Database = {
           id: string
           name: string
           position: number
+          quantity: number
         }
         Insert: {
           created_at?: string
           id?: string
           name: string
           position?: number
+          quantity?: number
         }
         Update: {
           created_at?: string
           id?: string
           name?: string
           position?: number
+          quantity?: number
         }
         Relationships: []
       }

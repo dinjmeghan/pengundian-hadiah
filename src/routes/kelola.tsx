@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, Gift, Pencil, Plus, Trash2, Users, X } from "lucide-react";
+import { ArrowLeft, Gift, Minus, Pencil, Plus, Trash2, Users, X } from "lucide-react";
 import { useUndianData } from "@/lib/store";
 import { OperatorGate, SignOutButton } from "@/components/OperatorGate";
 
@@ -31,8 +31,8 @@ function KelolaPage() {
   );
 }
 
-type Form = { name: string; address: string; ticket: string };
-const EMPTY: Form = { name: "", address: "", ticket: "" };
+type Form = { name: string; address: string; phone: string };
+const EMPTY: Form = { name: "", address: "", phone: "" };
 
 function Kelola() {
   const {
@@ -43,6 +43,7 @@ function Kelola() {
     deleteParticipant,
     addPrize,
     updatePrize,
+    updatePrizeQuantity,
     deletePrize,
   } = useUndianData();
 
@@ -54,17 +55,17 @@ function Kelola() {
   const [prizeEditId, setPrizeEditId] = useState<string | null>(null);
 
   const filtered = participants.filter((p) =>
-    `${p.name} ${p.address} ${p.ticket}`.toLowerCase().includes(query.toLowerCase()),
+    `${p.name} ${p.address} ${p.phone}`.toLowerCase().includes(query.toLowerCase()),
   );
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const name = form.name.trim().toUpperCase().slice(0, 80);
     const address = form.address.trim().slice(0, 160);
-    const ticket = form.ticket.trim().toUpperCase().slice(0, 40);
-    if (!name || !address || !ticket) return;
-    if (editId !== null) updateParticipant(editId, { name, address, ticket });
-    else addParticipant({ name, address, ticket });
+    const phone = form.phone.trim().replace(/[^\d+]/g, "").slice(0, 20);
+    if (!name || !address || !phone) return;
+    if (editId !== null) updateParticipant(editId, { name, address, phone });
+    else addParticipant({ name, address, phone });
     setForm(EMPTY);
     setEditId(null);
   };
@@ -119,10 +120,10 @@ function Kelola() {
                   onChange={(v) => setForm((f) => ({ ...f, address: v }))}
                 />
                 <Field
-                  label="Nomor Undian"
-                  value={form.ticket}
-                  maxLength={40}
-                  onChange={(v) => setForm((f) => ({ ...f, ticket: v }))}
+                  label="Nomor HP"
+                  value={form.phone}
+                  maxLength={20}
+                  onChange={(v) => setForm((f) => ({ ...f, phone: v }))}
                 />
                 <div className="flex flex-wrap gap-3 sm:col-span-3">
                   <button
@@ -155,7 +156,7 @@ function Kelola() {
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value.slice(0, 60))}
-                  placeholder="Cari nama / alamat / nomor"
+                  placeholder="Cari nama / alamat / no HP"
                   className="h-11 w-full max-w-xs rounded-xl border border-input bg-panel-2 px-4 font-prize text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring sm:w-auto"
                 />
               </div>
@@ -166,7 +167,7 @@ function Kelola() {
                     <tr className="text-[0.7rem] tracking-[0.2em] text-muted-foreground uppercase">
                       <th className="px-4 py-3">Nama</th>
                       <th className="px-4 py-3">Alamat</th>
-                      <th className="px-4 py-3">Nomor Undian</th>
+                      <th className="px-4 py-3">Nomor HP</th>
                       <th className="px-4 py-3 text-right">Aksi</th>
                     </tr>
                   </thead>
@@ -182,14 +183,14 @@ function Kelola() {
                       <tr key={p.id} className="border-t border-border">
                         <td className="px-4 py-3 font-semibold">{p.name}</td>
                         <td className="px-4 py-3 text-muted-foreground">{p.address}</td>
-                        <td className="px-4 py-3">{p.ticket}</td>
+                        <td className="px-4 py-3">{p.phone}</td>
                         <td className="px-4 py-3">
                           <div className="flex justify-end gap-2">
                             <IconButton
                               label={`Ubah ${p.name}`}
                               onClick={() => {
                                 setEditId(p.id);
-                                setForm({ name: p.name, address: p.address, ticket: p.ticket });
+                                setForm({ name: p.name, address: p.address, phone: p.phone });
                               }}
                             >
                               <Pencil className="size-4" />
@@ -261,7 +262,24 @@ function Kelola() {
                     key={h.id}
                     className="flex items-center justify-between gap-2 rounded-lg bg-panel-2/70 px-3 py-2 font-prize text-xs"
                   >
-                    <span className="font-semibold">{h.name}</span>
+                    <span className="flex-1 font-semibold">{h.name}</span>
+                    <span className="flex items-center gap-1 rounded-lg bg-panel-2 px-1">
+                      <IconButton
+                        label={`Kurangi jumlah ${h.name}`}
+                        onClick={() => updatePrizeQuantity(h.id, (h.quantity ?? 1) - 1)}
+                      >
+                        <Minus className="size-3.5" />
+                      </IconButton>
+                      <span className="min-w-6 text-center font-semibold tabular-nums">
+                        {h.quantity ?? 1}
+                      </span>
+                      <IconButton
+                        label={`Tambah jumlah ${h.name}`}
+                        onClick={() => updatePrizeQuantity(h.id, (h.quantity ?? 1) + 1)}
+                      >
+                        <Plus className="size-3.5" />
+                      </IconButton>
+                    </span>
                     <span className="flex gap-1">
                       <IconButton
                         label={`Ubah ${h.name}`}

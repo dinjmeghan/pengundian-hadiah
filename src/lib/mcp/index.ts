@@ -16,7 +16,7 @@ export default defineMcp({
   title: "Lucky Draw Dashboard",
   version: "0.1.0",
   instructions:
-    "Tools for the Lucky Draw Dashboard (Dashboard Pengundian Hadiah). Read and manage draw participants (name, address, ticket number) and the prize list. Callers must sign in as an operator/admin of the app; participant data is protected by row-level security.",
+    "Tools for the Lucky Draw Dashboard (Dashboard Pengundian Hadiah). Read and manage draw participants (name, address, phone number) and the prize list. Callers must sign in as an operator/admin of the app; participant data is protected by row-level security.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
