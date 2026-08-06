@@ -79,9 +79,14 @@ function Index() {
 
   useEffect(() => clear, [clear]);
 
+  // Safety net: pengundian hanya boleh berjalan saat status MENGUNDI.
+  useEffect(() => {
+    if (status !== "MENGUNDI") clear();
+  }, [status, clear]);
+
   const start = () => {
-    if (status === "MENGUNDI" || remaining.length === 0) return;
-    setWinner(null);
+    // Hanya jalan atas perintah operator, dan tidak saat pemenang masih tampil.
+    if (status !== "READY" || winner || remaining.length === 0) return;
     setStatus("MENGUNDI");
     clear();
     intervalRef.current = window.setInterval(() => {
@@ -100,6 +105,7 @@ function Index() {
     setStatus("PEMENANG");
     playWin();
   };
+
 
   const save = () => {
     if (!winner) return;
