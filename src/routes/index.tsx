@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Gift,
+  MapPin,
+  Phone,
   Play,
   RotateCcw,
   Save,
@@ -10,6 +12,7 @@ import {
   Ticket,
   Users,
 } from "lucide-react";
+
 import { type Participant } from "@/data/participants";
 import { useUndianData } from "@/lib/store";
 import { Celebration } from "@/components/Celebration";
@@ -196,15 +199,18 @@ function Index() {
                 )}
 
                 {status === "PEMENANG" && winner && (
-                  <div className="flex w-full animate-pop flex-col items-center gap-6">
-                    <div className="flex flex-col items-center gap-2">
-                      <span className="font-prize text-[0.7rem] tracking-[0.36em] text-muted-foreground uppercase">
-                        Nomor HP
-                      </span>
-                      <span className="font-display text-[clamp(1.9rem,3vw,2.5rem)] font-bold tracking-[0.12em]">
+                  <div className="-mt-3 flex w-full animate-pop flex-col items-center gap-6">
+                    <div className="flex w-full max-w-3xl flex-col items-center gap-1">
+                      <p className="flex items-center gap-2 font-prize text-[clamp(0.95rem,1.5vw,1.15rem)] leading-snug font-medium text-foreground/90">
+                        <MapPin className="size-4 shrink-0 text-primary" />
+                        <span className="text-center">{winner.address}</span>
+                      </p>
+                      <p className="flex items-center gap-2 font-display text-[clamp(1.1rem,1.9vw,1.5rem)] leading-snug font-bold tracking-[0.1em]">
+                        <Phone className="size-4 shrink-0 text-primary" />
                         {winner.phone}
-                      </span>
+                      </p>
                     </div>
+
 
                     <div className="flex w-full max-w-2xl flex-col items-center gap-3 rounded-2xl border border-gold/40 bg-panel-2/70 px-6 py-6">
                       <span className="flex items-center gap-2 font-prize text-xs font-semibold tracking-[0.34em] text-gold uppercase">
