@@ -115,7 +115,9 @@ function Index() {
 
   const next = () => {
     save();
+    clear();
     setWinner(null);
+    setRolling(null);
     setStatus("READY");
     setPrizeIndex((i) => i + 1);
   };
@@ -123,11 +125,13 @@ function Index() {
   const reset = () => {
     clear();
     setWinner(null);
+    setRolling(null);
     setStatus("READY");
     setDrawnIds([]);
     setSavedCount(0);
     setPrizeIndex(0);
   };
+
 
   const displayed = winner ?? rolling;
   const spinning = status === "MENGUNDI";
