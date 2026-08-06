@@ -235,10 +235,11 @@ function Index() {
                 <ControlButton
                   tone="primary"
                   onClick={start}
-                  disabled={spinning || remaining.length === 0}
+                  disabled={spinning || !!winner || remaining.length === 0}
                 >
                   <Play className="size-5" /> Mulai Undian
                 </ControlButton>
+
                 <ControlButton tone="danger" onClick={stop} disabled={!spinning}>
                   <Square className="size-5" /> Stop
                 </ControlButton>
