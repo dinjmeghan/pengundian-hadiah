@@ -79,9 +79,14 @@ function Index() {
 
   useEffect(() => clear, [clear]);
 
+  // Safety net: pengundian hanya boleh berjalan saat status MENGUNDI.
+  useEffect(() => {
+    if (status !== "MENGUNDI") clear();
+  }, [status, clear]);
+
   const start = () => {
-    if (status === "MENGUNDI" || remaining.length === 0) return;
-    setWinner(null);
+    // Hanya jalan atas perintah operator, dan tidak saat pemenang masih tampil.
+    if (status !== "READY" || winner || remaining.length === 0) return;
     setStatus("MENGUNDI");
     clear();
     intervalRef.current = window.setInterval(() => {
@@ -101,6 +106,7 @@ function Index() {
     playWin();
   };
 
+
   const save = () => {
     if (!winner) return;
     setDrawnIds((ids) => (ids.includes(winner.id) ? ids : [...ids, winner.id]));
@@ -109,7 +115,9 @@ function Index() {
 
   const next = () => {
     save();
+    clear();
     setWinner(null);
+    setRolling(null);
     setStatus("READY");
     setPrizeIndex((i) => i + 1);
   };
@@ -117,11 +125,13 @@ function Index() {
   const reset = () => {
     clear();
     setWinner(null);
+    setRolling(null);
     setStatus("READY");
     setDrawnIds([]);
     setSavedCount(0);
     setPrizeIndex(0);
   };
+
 
   const displayed = winner ?? rolling;
   const spinning = status === "MENGUNDI";
@@ -225,10 +235,11 @@ function Index() {
                 <ControlButton
                   tone="primary"
                   onClick={start}
-                  disabled={spinning || remaining.length === 0}
+                  disabled={spinning || !!winner || remaining.length === 0}
                 >
                   <Play className="size-5" /> Mulai Undian
                 </ControlButton>
+
                 <ControlButton tone="danger" onClick={stop} disabled={!spinning}>
                   <Square className="size-5" /> Stop
                 </ControlButton>
